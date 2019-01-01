@@ -19,6 +19,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeListener;
 import javax.swing.JFrame;
 
+
 public class GUI extends JFrame{
 
 private static final long serialVersionUID = 1L; 
@@ -334,7 +335,7 @@ private static final long serialVersionUID = 1L;
                     //Delete button
                     JButton deleteBtn = new JButton();
                     deleteBtn.setBounds(20,365,230,30);
-                    deleteBtn.setText("Delete");
+                    deleteBtn.setText("Deleted");
                     deleteBtn.setVisible(true);
 
                     window.add(deleteBtn);
