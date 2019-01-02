@@ -33,7 +33,10 @@ private static final long serialVersionUID = 1L;
         }
     }
 
-
+    public static int searchStudent(String name,String surName){
+        
+        return -1;
+    }
 
     public static void validateAndProcess(String name, String surName, int busID, String sasa,String path){
 
@@ -75,6 +78,39 @@ private static final long serialVersionUID = 1L;
          } catch (Exception e) {
              System.out.println(e);
          }
+
+    }
+
+    public static void removeAndSave(String path,JTextArea textArea){
+
+        //deleting all the previous content of the file
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter(path);
+            writer.print("");
+            writer.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+
+
+        String text = textArea.getText();
+        String adjusted = text.replaceAll("(?m)^[ \t]*\r?\n", "");
+
+        for(String line : adjusted.split("\\n")){
+            String objarray[] = line.split(",");
+            int busID = Character.getNumericValue(objarray[2].charAt(2));;
+            boolean saas = false;
+            if(objarray[3].equals("Y") || objarray[3].equals("y")){
+                saas = true;
+            }else{
+                saas = false;
+            }
+            Student std = new Student(objarray[0].trim().replaceAll("\\s",""),objarray[1].trim().replaceAll("\\s",""),busID,saas);
+            addToFile(path, std);
+        }
 
     }
 
@@ -203,6 +239,57 @@ private static final long serialVersionUID = 1L;
                     sWindow.setVisible(true);
                     sWindow.getContentPane().setLayout(null);
 
+                    JLabel topLable = new JLabel();
+                    topLable.setBounds(30, 10, 400, 60);
+                    topLable.setText("Enter Student Details and click search");
+                    sWindow.add(topLable);
+                    sPanel.add(topLable);
+
+                    JLabel b1labelS = new JLabel();
+                    b1labelS.setBounds(30, 60, 150, 60);
+                    b1labelS.setText("Student name:");
+                    sWindow.add(b1labelS);
+                    sPanel.add(b1labelS);
+                    JTextField b1labelStext = new JTextField();
+                    b1labelStext.setBounds(190,80,120,20);
+                    b1labelStext.setEditable(true);
+                    sWindow.add(b1labelStext);
+                    sPanel.add(b1labelStext);
+
+                    JLabel b1labelS2 = new JLabel();
+                    b1labelS2.setBounds(30, 120, 150, 60);
+                    b1labelS2.setText("Student surname:");
+                    sWindow.add(b1labelS2);
+                    sPanel.add(b1labelS2);
+                    JTextField b1labelS2text = new JTextField();
+                    b1labelS2text.setBounds(190,140,120,20);
+                    b1labelS2text.setEditable(true);
+                    sWindow.add(b1labelS2text);
+                    sPanel.add(b1labelS2text);
+
+                    //save button
+                    JButton searchBtn = new JButton();
+                    searchBtn.setBounds(30,200,230,30);
+                    searchBtn.setText("Search");
+                    searchBtn.setVisible(true);
+
+                    window.add(searchBtn);
+                    sWindow.add(searchBtn);
+                    sPanel.add(searchBtn);
+
+                    JLabel bottomLable = new JLabel();
+                    bottomLable.setBounds(30, 240, 400, 60);
+                    bottomLable.setText("Student is in the bus :");
+                    sWindow.add(bottomLable);
+                    sPanel.add(bottomLable);
+
+                    searchBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            
+                        };
+                    });
+
                 }
             });
         //WEEKLY NOTICES
@@ -325,22 +412,22 @@ private static final long serialVersionUID = 1L;
 
                     JButton dataa = new JButton();
                     dataa.setBounds(20,330,230,30);
-                    dataa.setText("Save");
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
 
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
 
-                    //Delete button
-                    JButton deleteBtn = new JButton();
-                    deleteBtn.setBounds(20,365,230,30);
-                    deleteBtn.setText("Deleted");
-                    deleteBtn.setVisible(true);
+                    //save button
+                    JButton saveBtn = new JButton();
+                    saveBtn.setBounds(20,365,230,30);
+                    saveBtn.setText("Save");
+                    saveBtn.setVisible(true);
 
-                    window.add(deleteBtn);
-                    sWindow.add(deleteBtn);
-                    sPanel.add(deleteBtn);
+                    window.add(saveBtn);
+                    sWindow.add(saveBtn);
+                    sPanel.add(saveBtn);
                     
 
                     JTextArea show = new JTextArea();
@@ -355,17 +442,23 @@ private static final long serialVersionUID = 1L;
                     sPanel.add(show);
 
                     dataa.addActionListener(new ActionListener() {
-                            public void
-actionPerformed(java.awt.event.ActionEvent d)
-                            {
-                               
-                                validateAndProcess(b1labelStext.getText(),b1labelS2text.getText(),1, 
-                                    b1labelS4text.getText(),"appData/bus1.txt");
-                                show.setText(getFileData("appData/bus1.txt"));
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            validateAndProcess(b1labelStext.getText(),b1labelS2text.getText(),1, 
+                            b1labelS4text.getText(),"appData/bus1.txt");
+                            show.setText(getFileData("appData/bus1.txt"));
+                        };
+                    });
 
-                            };
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus1.txt",show);
+                            show.setText(getFileData("appData/bus1.txt"));
+                        };
+                    });
 
-                        });
+                        
                 }});
 
         //BUTTON 2 CODE
@@ -456,12 +549,22 @@ actionPerformed(java.awt.event.ActionEvent d)
                     sPanel.add(labelS4text);
 
                     JButton dataa = new JButton();
-                    dataa.setBounds(20,330,230,60);
-                    dataa.setText("Save");
+                    dataa.setBounds(20,330,230,30);
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
+
+                    //save button
+                    JButton saveBtn = new JButton();
+                    saveBtn.setBounds(20,365,230,30);
+                    saveBtn.setText("Save");
+                    saveBtn.setVisible(true);
+
+                    window.add(saveBtn);
+                    sWindow.add(saveBtn);
+                    sPanel.add(saveBtn);
 
                     JTextArea show = new JTextArea();
                     show.setBounds(260,10,210,500);
@@ -484,7 +587,16 @@ actionPerformed(java.awt.event.ActionEvent d)
 
                             };
 
-                        });
+                    });
+
+
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus2.txt",show);
+                            show.setText(getFileData("appData/bus2.txt"));
+                        };
+                    });
                 }});
 
         //BUTTON 3 CODE
@@ -572,12 +684,22 @@ actionPerformed(java.awt.event.ActionEvent d)
                     sPanel.add(labelS4text);
 
                     JButton dataa = new JButton();
-                    dataa.setBounds(20,330,230,60);
-                    dataa.setText("Save");
+                    dataa.setBounds(20,330,230,30);
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
+
+                     //save button
+                     JButton saveBtn = new JButton();
+                     saveBtn.setBounds(20,365,230,30);
+                     saveBtn.setText("Save");
+                     saveBtn.setVisible(true);
+ 
+                     window.add(saveBtn);
+                     sWindow.add(saveBtn);
+                     sPanel.add(saveBtn);
 
                     JTextArea show = new JTextArea();
                     show.setBounds(260,10,210,500);
@@ -589,8 +711,7 @@ actionPerformed(java.awt.event.ActionEvent d)
                     sPanel.add(show);
 
                     dataa.addActionListener(new ActionListener() {
-                            public void
-actionPerformed(java.awt.event.ActionEvent e)
+                            public void actionPerformed(java.awt.event.ActionEvent e)
                             {
 
                                 validateAndProcess(labelStext.getText(),labelS2text.getText(),3, 
@@ -600,7 +721,16 @@ actionPerformed(java.awt.event.ActionEvent e)
 
                             };
 
-                        });
+                    });
+
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus3.txt",show);
+                            show.setText(getFileData("appData/bus3.txt"));
+                        };
+                    });
+
                 }});
 
         //BUTTON 4 CODE
@@ -687,12 +817,22 @@ actionPerformed(java.awt.event.ActionEvent e)
                     sPanel.add(labelS4text);
 
                     JButton dataa = new JButton();
-                    dataa.setBounds(20,330,230,60);
-                    dataa.setText("Save");
+                    dataa.setBounds(20,330,230,30);
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
+
+                    //save button
+                    JButton saveBtn = new JButton();
+                    saveBtn.setBounds(20,365,230,30);
+                    saveBtn.setText("Save");
+                    saveBtn.setVisible(true);
+
+                    window.add(saveBtn);
+                    sWindow.add(saveBtn);
+                    sPanel.add(saveBtn);
 
                     JTextArea show = new JTextArea();
                     show.setBounds(260,10,210,500);
@@ -704,18 +844,23 @@ actionPerformed(java.awt.event.ActionEvent e)
                     sPanel.add(show);
 
                     dataa.addActionListener(new ActionListener() {
-                            public void
-actionPerformed(java.awt.event.ActionEvent h)
+                            public void actionPerformed(java.awt.event.ActionEvent h)
                             {
-
                                 validateAndProcess(labelStext.getText(),labelS2text.getText(),4, 
                                     labelS4text.getText(),"appData/bus4.txt");
                                 show.setText(getFileData("appData/bus4.txt"));
-
-
                             };
 
-                        });
+                    });
+
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus4.txt",show);
+                            show.setText(getFileData("appData/bus4.txt"));
+                        };
+                    });
+
                 }});
 
         //BUTTON 5 CODE
@@ -802,12 +947,22 @@ actionPerformed(java.awt.event.ActionEvent h)
                     sPanel.add(labelS4text);
 
                     JButton dataa = new JButton();
-                    dataa.setBounds(20,330,230,60);
-                    dataa.setText("Save");
+                    dataa.setBounds(20,330,230,30);
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
+
+                    //save button
+                    JButton saveBtn = new JButton();
+                    saveBtn.setBounds(20,365,230,30);
+                    saveBtn.setText("Save");
+                    saveBtn.setVisible(true);
+
+                    window.add(saveBtn);
+                    sWindow.add(saveBtn);
+                    sPanel.add(saveBtn);
 
                     JTextArea show = new JTextArea();
                     show.setBounds(260,10,210,500);
@@ -819,8 +974,7 @@ actionPerformed(java.awt.event.ActionEvent h)
                     sPanel.add(show);
 
                     dataa.addActionListener(new ActionListener() {
-                            public void
-actionPerformed(java.awt.event.ActionEvent h)
+                            public void actionPerformed(java.awt.event.ActionEvent h)
                             {
 
                                 validateAndProcess(labelStext.getText(),labelS2text.getText(),5, 
@@ -830,7 +984,16 @@ actionPerformed(java.awt.event.ActionEvent h)
 
                             };
 
-                        });
+                    });
+
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus5.txt",show);
+                            show.setText(getFileData("appData/bus5.txt"));
+                        };
+                    });
+
                 }});
 
         //BUTTON 6 CODE
@@ -916,12 +1079,22 @@ actionPerformed(java.awt.event.ActionEvent h)
                     sPanel.add(labelS4text);
 
                     JButton dataa = new JButton();
-                    dataa.setBounds(20,330,230,60);
-                    dataa.setText("Save");
+                    dataa.setBounds(20,330,230,30);
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
+
+                    //save button
+                    JButton saveBtn = new JButton();
+                    saveBtn.setBounds(20,365,230,30);
+                    saveBtn.setText("Save");
+                    saveBtn.setVisible(true);
+
+                    window.add(saveBtn);
+                    sWindow.add(saveBtn);
+                    sPanel.add(saveBtn);
 
                     JTextArea show = new JTextArea();
                     show.setBounds(260,10,210,500);
@@ -933,20 +1106,25 @@ actionPerformed(java.awt.event.ActionEvent h)
                     sPanel.add(show);
 
                     dataa.addActionListener(new ActionListener() {
-                            public void
-actionPerformed(java.awt.event.ActionEvent h)
+                            public void actionPerformed(java.awt.event.ActionEvent h)
                             {
 
                                 validateAndProcess(labelStext.getText(),labelS2text.getText(),6, 
                                     labelS4text.getText(),"appData/bus6.txt");
                                 show.setText(getFileData("appData/bus6.txt"));
 
-
-
-
                             };
 
-                        });
+                    });
+
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus6.txt",show);
+                            show.setText(getFileData("appData/bus6.txt"));
+                        };
+                    });
+
                 }});
 
         //BUTTON 7 CODE
@@ -1032,12 +1210,23 @@ actionPerformed(java.awt.event.ActionEvent h)
                     sPanel.add(labelS4text);
 
                     JButton dataa = new JButton();
-                    dataa.setBounds(20,330,230,60);
-                    dataa.setText("Save");
+                    dataa.setBounds(20,330,230,30);
+                    dataa.setText("Add Student");
                     dataa.setVisible(true);
                     window.add(dataa);
                     sWindow.add(dataa);
                     sPanel.add(dataa);
+
+                    //save button
+                    JButton saveBtn = new JButton();
+                    saveBtn.setBounds(20,365,230,30);
+                    saveBtn.setText("Save");
+                    saveBtn.setVisible(true);
+
+                    window.add(saveBtn);
+                    sWindow.add(saveBtn);
+                    sPanel.add(saveBtn);
+
 
                     JTextArea show = new JTextArea();
                     show.setBounds(260,10,210,500);
@@ -1049,8 +1238,7 @@ actionPerformed(java.awt.event.ActionEvent h)
                     sPanel.add(show);
 
                     dataa.addActionListener(new ActionListener() {
-                            public void
-actionPerformed(java.awt.event.ActionEvent h)
+                            public void actionPerformed(java.awt.event.ActionEvent h)
                             {
 
                                 validateAndProcess(labelStext.getText(),labelS2text.getText(),7, 
@@ -1058,8 +1246,16 @@ actionPerformed(java.awt.event.ActionEvent h)
                                 show.setText(getFileData("appData/bus7.txt"));
 
                             };
+                    });
 
-                        });
+                    saveBtn.addActionListener(new ActionListener() {
+                        public void actionPerformed(java.awt.event.ActionEvent d)
+                        {
+                            removeAndSave("appData/bus7.txt",show);
+                            show.setText(getFileData("appData/bus7.txt"));
+                        };
+                    });
+
                 }});
             ;
 
