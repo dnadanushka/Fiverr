@@ -1,5 +1,6 @@
 
-import java.io.*; 
+import java.io.*;
+import java.util.List;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import java.awt.Dimension;
@@ -32,9 +33,46 @@ private static final long serialVersionUID = 1L;
             return false;
         }
     }
-
+    //searching students in the files
     public static int searchStudent(String name,String surName){
-        
+        File dir = new File("appData");
+        File[] directoryListing = dir.listFiles();
+            for (File child : directoryListing) { //for all files in the direcory
+                try { 
+                    BufferedReader in = new BufferedReader( 
+                                new FileReader(child)); 
+          
+                    String mystring; 
+                    while ((mystring = in.readLine()) != null) { 
+                        
+    
+                         // deserialize the object
+                         try {
+                             byte b[] = mystring.getBytes(); 
+                             ByteArrayInputStream bi = new ByteArrayInputStream(b);
+                             ObjectInputStream si = new ObjectInputStream(bi);
+                             Student obj = (Student) si.readObject();
+                             //System.out.print(obj.ToString()); 
+                             String temp;
+                             if(obj.GetASA()){
+                                temp = "Y";
+                             }else{
+                                temp = "N";
+                             }
+                            // System.out.println(obj.GetName() + obj.GetSurname());
+                             if(obj.GetName().trim().replaceAll("(?m)^[ \t]*\r?\n", "").equals(name) && obj.GetSurname().replaceAll("(?m)^[ \t]*\r?\n", "").trim().equals(surName)){
+                                return Character.getNumericValue(child.toString().charAt(11));
+                                //return 1;
+                             } 
+                         } catch (Exception e) {
+                             System.out.println(e);
+                         }  
+                    } 
+                } 
+                catch (IOException e) { 
+                    System.out.println("Exception Occurred" + e); 
+                }
+            }
         return -1;
     }
 
@@ -101,7 +139,7 @@ private static final long serialVersionUID = 1L;
 
         for(String line : adjusted.split("\\n")){
             String objarray[] = line.split(",");
-            int busID = Character.getNumericValue(objarray[2].charAt(2));;
+            int busID = Character.getNumericValue(objarray[2].charAt(2));
             boolean saas = false;
             if(objarray[3].equals("Y") || objarray[3].equals("y")){
                 saas = true;
@@ -286,7 +324,13 @@ private static final long serialVersionUID = 1L;
                     searchBtn.addActionListener(new ActionListener() {
                         public void actionPerformed(java.awt.event.ActionEvent d)
                         {
-                            
+                           
+                            int val = searchStudent(b1labelStext.getText().trim(),b1labelS2text.getText().trim());
+                            if(val == -1){
+                                bottomLable.setText("No such Student");
+                            }else{
+                                bottomLable.setText("Student is in the bus : " + val);
+                            }
                         };
                     });
 
